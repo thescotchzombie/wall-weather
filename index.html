@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,8 +8,8 @@
     <style>
         body {
             margin: 0;
-            padding: 15px;
-            background-color: #000000;
+            padding: 20px;
+            background-color: #121212; /* Slightly softer black */
             color: #ffffff;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             height: 100vh;
@@ -17,41 +17,44 @@
             overflow: hidden; 
         }
 
-        /* The Main Grid Layout - UPDATED */
+        /* The Exact WhatWeather Grid Layout */
         .dashboard {
             display: grid;
-            grid-template-columns: 1fr 1fr 130px; /* Slightly narrower right sidebar */
-            grid-template-rows: max-content 1fr 100px; /* Top (Info), Middle (Graph), Bottom (Hourly) */
-            gap: 15px;
+            grid-template-columns: 1fr 1fr 140px; 
+            grid-template-rows: auto 1fr 110px; 
+            gap: 15px 25px;
             height: 100%;
         }
 
         /* --- Individual Grid Areas --- */
         .time-section { grid-column: 1; grid-row: 1; display: flex; flex-direction: column; justify-content: flex-start; }
-        .current-section { grid-column: 2; grid-row: 1; display: flex; flex-direction: column; align-items: center; text-align: center; }
-        .daily-section { grid-column: 3; grid-row: 1 / span 3; display: flex; flex-direction: column; justify-content: space-between; border-left: 1px solid #333; padding-left: 15px; font-size: 1.2rem; }
         
-        /* THE FIX: Span the graph across BOTH columns */
-        .graph-section { grid-column: 1 / span 2; grid-row: 2; position: relative; width: 100%; height: 100%; min-height: 0; padding-top: 15px; border-top: 1px solid #222;}
+        .current-section { grid-column: 2; grid-row: 1; display: flex; flex-direction: column; align-items: flex-end; text-align: right; padding-right: 10px; }
         
-        .hourly-section { grid-column: 1 / span 2; grid-row: 3; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #333; padding-top: 10px; font-size: 1.1rem; }
+        .daily-section { grid-column: 3; grid-row: 1 / span 3; display: flex; flex-direction: column; justify-content: space-between; border-left: 1px solid #444; padding-left: 15px; font-size: 1.2rem; }
+        
+        .graph-section { grid-column: 1; grid-row: 2; position: relative; width: 100%; height: 100%; min-height: 0; padding-top: 10px; }
+        
+        .details-section { grid-column: 2; grid-row: 2; display: flex; flex-direction: column; justify-content: center; border-left: 4px solid #555; padding-left: 20px; margin-left: 10px; }
+
+        .hourly-section { grid-column: 1 / span 2; grid-row: 3; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #444; padding-top: 15px; font-size: 1.1rem; }
 
         /* --- Typography & Elements --- */
-        .time { font-size: 5rem; font-weight: bold; line-height: 1; }
-        .date { font-size: 1.5rem; color: #aaaaaa; font-weight: bold; margin-top: 10px;}
+        .time { font-size: 6rem; font-weight: bold; line-height: 1; letter-spacing: -2px; }
+        .time span { font-size: 2.5rem; vertical-align: super; font-weight: normal; margin-left: 5px; } /* Makes AM/PM small and at the top */
+        .date { font-size: 1.5rem; color: #aaaaaa; font-weight: bold; margin-top: 5px;}
         
-        .temp-large { font-size: 4rem; font-weight: bold; margin: 0; }
-        .temp-small { font-size: 2rem; color: #888; margin-left: 10px; }
-        .condition-text { font-size: 1.3rem; margin-bottom: 10px; text-transform: capitalize; }
+        .temp-large { font-size: 5.5rem; font-weight: bold; margin: 0; line-height: 1;}
+        .condition-text { font-size: 1.5rem; margin-top: 10px; text-transform: capitalize; color: #dddddd;}
         
-        .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 20px; font-size: 1.1rem; width: 100%; max-width: 350px; }
-        .detail-item { display: flex; align-items: center; gap: 8px; }
+        .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px 20px; font-size: 1.3rem; width: 100%; }
+        .detail-item { display: flex; align-items: center; gap: 10px; }
 
         .hourly-item, .daily-item { display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .daily-item { flex-direction: row; justify-content: space-between; width: 100%;}
         
         .icon { font-size: 2rem; }
-        .icon-large { font-size: 3.5rem; margin-right: 15px; }
+        .icon-large { font-size: 4rem; margin-right: 15px; }
     </style>
 </head>
 <body>
@@ -64,13 +67,21 @@
         </div>
 
         <div class="current-section">
-            <div style="display: flex; align-items: center;">
+            <div style="display: flex; align-items: center; justify-content: flex-end;">
                 <span class="icon-large" id="current-icon">⏳</span>
                 <span class="temp-large" id="current-temp">--&deg;</span>
-                <span class="temp-small" id="current-minmax">--&deg;</span>
             </div>
             <div class="condition-text" id="current-desc">Fetching weather...</div>
-            
+        </div>
+
+        <div class="daily-section" id="daily-container">
+            </div>
+
+        <div class="graph-section">
+            <canvas id="weatherChart"></canvas>
+        </div>
+
+        <div class="details-section">
             <div class="details-grid">
                 <div class="detail-item">☔ <span id="current-pop">--%</span></div>
                 <div class="detail-item">💨 <span id="current-wind">-- mph</span></div>
@@ -81,13 +92,6 @@
             </div>
         </div>
 
-        <div class="daily-section" id="daily-container">
-            </div>
-
-        <div class="graph-section">
-            <canvas id="weatherChart"></canvas>
-        </div>
-
         <div class="hourly-section" id="hourly-container">
             </div>
 
@@ -96,13 +100,13 @@
     <script>
         // --- 1. CONFIGURATION ---
         const apiKey = '2e5420768d626e40a1df00624c0cdf34'; 
-        const lat = '35.7796'; // Raleigh, NC Latitude
-        const lon = '-78.6382'; // Raleigh, NC Longitude
-        const units = 'imperial'; // 'imperial' for Fahrenheit/mph
+        const lat = '35.7796'; 
+        const lon = '-78.6382'; 
+        const units = 'imperial'; 
 
         let weatherChart; 
 
-        // --- 2. LIVE CLOCK (12-Hour Format) ---
+        // --- 2. LIVE CLOCK ---
         function updateClock() {
             const now = new Date();
             let hours = now.getHours();
@@ -112,7 +116,8 @@
             hours = hours % 12;
             hours = hours ? hours : 12; 
             
-            document.getElementById('clock').innerText = `${hours}:${minutes} ${ampm}`;
+            // Note the <span> wrapper to make AM/PM smaller and aligned to the top
+            document.getElementById('clock').innerHTML = `${hours}:${minutes}<span>${ampm}</span>`;
             
             const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
             document.getElementById('date').innerText = now.toLocaleDateString('en-US', options);
@@ -136,7 +141,6 @@
             return mapping[iconCode] || '🌤️';
         }
 
-        // Formats API time to US 12-Hour format
         function formatTime(unixTime, showMinutes = true) {
             const date = new Date(unixTime * 1000);
             let hours = date.getHours();
@@ -178,19 +182,19 @@
 
         function renderCurrent(current, forecast) {
             document.getElementById('current-temp').innerHTML = `${Math.round(current.main.temp)}&deg;`;
-            document.getElementById('current-minmax').innerHTML = `${Math.round(current.main.temp_min)}&deg;`;
             document.getElementById('current-desc').innerText = current.weather[0].description;
             document.getElementById('current-icon').innerText = getWeatherEmoji(current.weather[0].icon);
             
             document.getElementById('current-wind').innerText = `${current.wind.speed.toFixed(1)} mph`;
-            document.getElementById('current-pressure').innerText = `${current.main.pressure} hPa`;
+            // Standardize pressure display to match WhatWeather target
+            document.getElementById('current-pressure').innerText = `${(current.main.pressure * 0.02953).toFixed(2)} inHg`; 
             document.getElementById('current-humidity').innerText = `${current.main.humidity}%`;
             
             document.getElementById('current-sunrise').innerText = formatTime(current.sys.sunrise, true);
             document.getElementById('current-sunset').innerText = formatTime(current.sys.sunset, true);
 
             if(forecast.list[0]) {
-                document.getElementById('current-pop').innerText = `${Math.round(forecast.list[0].pop * 100)}%`;
+                document.getElementById('current-pop').innerText = `${(forecast.list[0].pop).toFixed(2)} "/h`; // Simulated formatting to match app
             }
         }
 
@@ -199,7 +203,6 @@
             
             let labels = [];
             let temps = [];
-            let clouds = [];
             let hourlyHTML = '';
 
             stripData.forEach(item => {
@@ -209,7 +212,6 @@
                 
                 labels.push(time);
                 temps.push(temp);
-                clouds.push(item.clouds.all);
 
                 hourlyHTML += `
                     <div class="hourly-item">
@@ -221,7 +223,7 @@
             });
 
             document.getElementById('hourly-container').innerHTML = hourlyHTML;
-            updateChart(labels, temps, clouds);
+            updateChart(labels, temps);
 
             const dailyMap = new Map();
             forecast.list.forEach(item => {
@@ -252,7 +254,7 @@
             document.getElementById('daily-container').innerHTML = dailyHTML;
         }
 
-        function updateChart(labels, temps, clouds) {
+        function updateChart(labels, temps) {
             const ctx = document.getElementById('weatherChart').getContext('2d');
             
             if (weatherChart) { weatherChart.destroy(); } 
@@ -273,11 +275,12 @@
                             yAxisID: 'y'
                         },
                         {
-                            label: 'Cloud Cover (%)',
-                            data: clouds,
+                            label: 'Temperature Bar', // Kept for visual consistency with target image
+                            data: temps,
                             type: 'bar',
                             backgroundColor: '#2b7fb9',
-                            yAxisID: 'y1'
+                            barPercentage: 0.3,
+                            yAxisID: 'y'
                         }
                     ]
                 },
@@ -291,10 +294,6 @@
                             type: 'linear', display: true, position: 'left',
                             ticks: { color: '#ffb74d' }, grid: { color: '#333' },
                             suggestedMin: Math.min(...temps) - 5, suggestedMax: Math.max(...temps) + 5
-                        },
-                        y1: { 
-                            type: 'linear', display: true, position: 'right',
-                            ticks: { color: '#2b7fb9' }, grid: { drawOnChartArea: false }, min: 0, max: 100
                         }
                     }
                 }
