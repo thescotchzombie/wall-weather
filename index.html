@@ -8,8 +8,8 @@
     <style>
         body {
             margin: 0;
-            padding: 20px;
-            background-color: #121212; /* Slightly softer black */
+            padding: 25px;
+            background-color: #121212; 
             color: #ffffff;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             height: 100vh;
@@ -17,44 +17,48 @@
             overflow: hidden; 
         }
 
-        /* The Exact WhatWeather Grid Layout */
+        /* The Exact WhatWeather Grid Layout - SCALED UP */
         .dashboard {
             display: grid;
-            grid-template-columns: 1fr 1fr 140px; 
-            grid-template-rows: auto 1fr 110px; 
-            gap: 15px 25px;
+            grid-template-columns: 1.2fr 1fr 170px; /* Widened outer columns */
+            grid-template-rows: auto 1fr 140px; /* Taller bottom row */
+            gap: 20px 40px;
             height: 100%;
         }
 
         /* --- Individual Grid Areas --- */
         .time-section { grid-column: 1; grid-row: 1; display: flex; flex-direction: column; justify-content: flex-start; }
         
-        .current-section { grid-column: 2; grid-row: 1; display: flex; flex-direction: column; align-items: flex-end; text-align: right; padding-right: 10px; }
+        .current-section { grid-column: 2; grid-row: 1; display: flex; flex-direction: column; align-items: flex-start; padding-left: 20px; }
         
-        .daily-section { grid-column: 3; grid-row: 1 / span 3; display: flex; flex-direction: column; justify-content: space-between; border-left: 1px solid #444; padding-left: 15px; font-size: 1.2rem; }
+        .daily-section { grid-column: 3; grid-row: 1 / span 3; display: flex; flex-direction: column; justify-content: space-between; border-left: 1px solid #444; padding-left: 20px; font-size: 1.6rem; }
         
         .graph-section { grid-column: 1; grid-row: 2; position: relative; width: 100%; height: 100%; min-height: 0; padding-top: 10px; }
         
-        .details-section { grid-column: 2; grid-row: 2; display: flex; flex-direction: column; justify-content: center; border-left: 4px solid #555; padding-left: 20px; margin-left: 10px; }
+        .details-section { grid-column: 2; grid-row: 2; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; }
 
-        .hourly-section { grid-column: 1 / span 2; grid-row: 3; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #444; padding-top: 15px; font-size: 1.1rem; }
+        /* Wraps the grid so the gray border doesn't stretch too tall */
+        .details-wrapper { border-left: 5px solid #666; padding-left: 25px; margin-left: 20px; }
+
+        .hourly-section { grid-column: 1 / span 2; grid-row: 3; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #444; padding-top: 20px; font-size: 1.5rem; }
 
         /* --- Typography & Elements --- */
-        .time { font-size: 6rem; font-weight: bold; line-height: 1; letter-spacing: -2px; }
-        .time span { font-size: 2.5rem; vertical-align: super; font-weight: normal; margin-left: 5px; } /* Makes AM/PM small and at the top */
-        .date { font-size: 1.5rem; color: #aaaaaa; font-weight: bold; margin-top: 5px;}
+        .time { font-size: 8rem; font-weight: bold; line-height: 1; letter-spacing: -3px; }
+        .time span { font-size: 3rem; vertical-align: super; font-weight: normal; margin-left: 8px; } 
+        .date { font-size: 2rem; color: #aaaaaa; font-weight: bold; margin-top: 8px;}
         
-        .temp-large { font-size: 5.5rem; font-weight: bold; margin: 0; line-height: 1;}
-        .condition-text { font-size: 1.5rem; margin-top: 10px; text-transform: capitalize; color: #dddddd;}
+        .temp-large { font-size: 7rem; font-weight: bold; margin: 0; line-height: 1;}
+        .temp-small { font-size: 3rem; color: #888; margin-left: 15px; } /* Brought back the secondary temp to add bulk */
+        .condition-text { font-size: 1.8rem; margin-top: 15px; text-transform: capitalize; color: #dddddd;}
         
-        .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px 20px; font-size: 1.3rem; width: 100%; }
-        .detail-item { display: flex; align-items: center; gap: 10px; }
+        .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 35px; font-size: 1.6rem; width: 100%; }
+        .detail-item { display: flex; align-items: center; gap: 12px; }
 
-        .hourly-item, .daily-item { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .hourly-item, .daily-item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
         .daily-item { flex-direction: row; justify-content: space-between; width: 100%;}
         
-        .icon { font-size: 2rem; }
-        .icon-large { font-size: 4rem; margin-right: 15px; }
+        .icon { font-size: 2.8rem; }
+        .icon-large { font-size: 5.5rem; margin-right: 20px; }
     </style>
 </head>
 <body>
@@ -67,9 +71,10 @@
         </div>
 
         <div class="current-section">
-            <div style="display: flex; align-items: center; justify-content: flex-end;">
+            <div style="display: flex; align-items: center;">
                 <span class="icon-large" id="current-icon">⏳</span>
                 <span class="temp-large" id="current-temp">--&deg;</span>
+                <span class="temp-small" id="current-minmax">--&deg;</span>
             </div>
             <div class="condition-text" id="current-desc">Fetching weather...</div>
         </div>
@@ -82,13 +87,15 @@
         </div>
 
         <div class="details-section">
-            <div class="details-grid">
-                <div class="detail-item">☔ <span id="current-pop">--%</span></div>
-                <div class="detail-item">💨 <span id="current-wind">-- mph</span></div>
-                <div class="detail-item">🌡️ <span id="current-pressure">-- hPa</span></div>
-                <div class="detail-item">💧 <span id="current-humidity">--%</span></div>
-                <div class="detail-item">🌅 <span id="current-sunrise">--:--</span></div>
-                <div class="detail-item">🌇 <span id="current-sunset">--:--</span></div>
+            <div class="details-wrapper">
+                <div class="details-grid">
+                    <div class="detail-item">☔ <span id="current-pop">--%</span></div>
+                    <div class="detail-item">💨 <span id="current-wind">-- mph</span></div>
+                    <div class="detail-item">🌡️ <span id="current-pressure">-- hPa</span></div>
+                    <div class="detail-item">💧 <span id="current-humidity">--%</span></div>
+                    <div class="detail-item">🌅 <span id="current-sunrise">--:--</span></div>
+                    <div class="detail-item">🌇 <span id="current-sunset">--:--</span></div>
+                </div>
             </div>
         </div>
 
@@ -116,7 +123,6 @@
             hours = hours % 12;
             hours = hours ? hours : 12; 
             
-            // Note the <span> wrapper to make AM/PM smaller and aligned to the top
             document.getElementById('clock').innerHTML = `${hours}:${minutes}<span>${ampm}</span>`;
             
             const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
@@ -182,11 +188,11 @@
 
         function renderCurrent(current, forecast) {
             document.getElementById('current-temp').innerHTML = `${Math.round(current.main.temp)}&deg;`;
+            document.getElementById('current-minmax').innerHTML = `${Math.round(current.main.temp_min)}&deg;`;
             document.getElementById('current-desc').innerText = current.weather[0].description;
             document.getElementById('current-icon').innerText = getWeatherEmoji(current.weather[0].icon);
             
             document.getElementById('current-wind').innerText = `${current.wind.speed.toFixed(1)} mph`;
-            // Standardize pressure display to match WhatWeather target
             document.getElementById('current-pressure').innerText = `${(current.main.pressure * 0.02953).toFixed(2)} inHg`; 
             document.getElementById('current-humidity').innerText = `${current.main.humidity}%`;
             
@@ -194,7 +200,7 @@
             document.getElementById('current-sunset').innerText = formatTime(current.sys.sunset, true);
 
             if(forecast.list[0]) {
-                document.getElementById('current-pop').innerText = `${(forecast.list[0].pop).toFixed(2)} "/h`; // Simulated formatting to match app
+                document.getElementById('current-pop').innerText = `${(forecast.list[0].pop).toFixed(2)} "/h`; 
             }
         }
 
@@ -244,7 +250,7 @@
                 if(count >= 5) return; 
                 dailyHTML += `
                     <div class="daily-item">
-                        <span style="width: 40px;">${day}</span> 
+                        <span style="width: 50px;">${day}</span> 
                         <span class="icon">${getWeatherEmoji(data.icon)}</span> 
                         <span>${Math.round(data.min)}&deg;...${Math.round(data.max)}&deg;</span>
                     </div>
@@ -270,16 +276,17 @@
                             type: 'line',
                             borderColor: '#ffb74d',
                             backgroundColor: '#ffb74d',
-                            borderWidth: 3,
-                            pointRadius: 4,
+                            borderWidth: 4,
+                            pointRadius: 5,
                             yAxisID: 'y'
                         },
                         {
-                            label: 'Temperature Bar', // Kept for visual consistency with target image
+                            label: 'Temperature Bar', 
                             data: temps,
                             type: 'bar',
                             backgroundColor: '#2b7fb9',
-                            barPercentage: 0.3,
+                            barPercentage: 0.95, /* MUCH wider bars */
+                            categoryPercentage: 1.0, /* Closes the gaps between bars */
                             yAxisID: 'y'
                         }
                     ]
@@ -289,10 +296,10 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        x: { ticks: { color: '#aaa' }, grid: { color: '#333' } },
+                        x: { ticks: { color: '#aaa', font: {size: 14} }, grid: { color: '#333' } },
                         y: { 
                             type: 'linear', display: true, position: 'left',
-                            ticks: { color: '#ffb74d' }, grid: { color: '#333' },
+                            ticks: { color: '#ffb74d', font: {size: 14} }, grid: { color: '#333' },
                             suggestedMin: Math.min(...temps) - 5, suggestedMax: Math.max(...temps) + 5
                         }
                     }
