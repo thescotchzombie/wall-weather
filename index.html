@@ -8,7 +8,7 @@
     <style>
         body {
             margin: 0;
-            padding: 25px;
+            padding: 30px;
             background-color: #121212; 
             color: #ffffff;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -17,11 +17,11 @@
             overflow: hidden; 
         }
 
-        /* The Exact WhatWeather Grid Layout - SCALED UP */
+        /* The Exact WhatWeather Grid Layout - MEGA SCALED */
         .dashboard {
             display: grid;
-            grid-template-columns: 1.2fr 1fr 170px; /* Widened outer columns */
-            grid-template-rows: auto 1fr 140px; /* Taller bottom row */
+            grid-template-columns: 1.2fr 1.1fr 240px; /* Much wider right sidebar */
+            grid-template-rows: auto 1fr 180px; /* Much taller bottom row */
             gap: 20px 40px;
             height: 100%;
         }
@@ -31,34 +31,34 @@
         
         .current-section { grid-column: 2; grid-row: 1; display: flex; flex-direction: column; align-items: flex-start; padding-left: 20px; }
         
-        .daily-section { grid-column: 3; grid-row: 1 / span 3; display: flex; flex-direction: column; justify-content: space-between; border-left: 1px solid #444; padding-left: 20px; font-size: 1.6rem; }
+        .daily-section { grid-column: 3; grid-row: 1 / span 3; display: flex; flex-direction: column; justify-content: space-between; border-left: 1px solid #444; padding-left: 30px; font-size: 2.2rem; }
         
-        .graph-section { grid-column: 1; grid-row: 2; position: relative; width: 100%; height: 100%; min-height: 0; padding-top: 10px; }
+        .graph-section { grid-column: 1; grid-row: 2; position: relative; width: 100%; height: 100%; min-height: 0; padding-top: 15px; }
         
-        .details-section { grid-column: 2; grid-row: 2; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; }
+        .details-section { grid-column: 2; grid-row: 2; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; height: 100%; }
 
         /* Wraps the grid so the gray border doesn't stretch too tall */
-        .details-wrapper { border-left: 5px solid #666; padding-left: 25px; margin-left: 20px; }
+        .details-wrapper { border-left: 6px solid #666; padding-left: 35px; margin-left: 20px; padding-top: 10px; padding-bottom: 10px; }
 
-        .hourly-section { grid-column: 1 / span 2; grid-row: 3; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #444; padding-top: 20px; font-size: 1.5rem; }
+        .hourly-section { grid-column: 1 / span 2; grid-row: 3; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #444; padding-top: 25px; font-size: 2rem; }
 
         /* --- Typography & Elements --- */
-        .time { font-size: 8rem; font-weight: bold; line-height: 1; letter-spacing: -3px; }
-        .time span { font-size: 3rem; vertical-align: super; font-weight: normal; margin-left: 8px; } 
-        .date { font-size: 2rem; color: #aaaaaa; font-weight: bold; margin-top: 8px;}
+        .time { font-size: 9rem; font-weight: bold; line-height: 1; letter-spacing: -3px; }
+        .time span { font-size: 3.5rem; vertical-align: super; font-weight: normal; margin-left: 10px; } 
+        .date { font-size: 2.5rem; color: #aaaaaa; font-weight: bold; margin-top: 10px;}
         
-        .temp-large { font-size: 7rem; font-weight: bold; margin: 0; line-height: 1;}
-        .temp-small { font-size: 3rem; color: #888; margin-left: 15px; } /* Brought back the secondary temp to add bulk */
-        .condition-text { font-size: 1.8rem; margin-top: 15px; text-transform: capitalize; color: #dddddd;}
+        .temp-large { font-size: 8rem; font-weight: bold; margin: 0; line-height: 1;}
+        .temp-small { font-size: 3.5rem; color: #888; margin-left: 20px; } 
+        .condition-text { font-size: 2.2rem; margin-top: 15px; text-transform: capitalize; color: #dddddd;}
         
-        .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 35px; font-size: 1.6rem; width: 100%; }
-        .detail-item { display: flex; align-items: center; gap: 12px; }
+        .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 40px; font-size: 2.2rem; width: 100%; }
+        .detail-item { display: flex; align-items: center; gap: 15px; }
 
-        .hourly-item, .daily-item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .hourly-item, .daily-item { display: flex; flex-direction: column; align-items: center; gap: 12px; }
         .daily-item { flex-direction: row; justify-content: space-between; width: 100%;}
         
-        .icon { font-size: 2.8rem; }
-        .icon-large { font-size: 5.5rem; margin-right: 20px; }
+        .icon { font-size: 3.8rem; }
+        .icon-large { font-size: 7rem; margin-right: 25px; }
     </style>
 </head>
 <body>
@@ -71,244 +71,4 @@
         </div>
 
         <div class="current-section">
-            <div style="display: flex; align-items: center;">
-                <span class="icon-large" id="current-icon">⏳</span>
-                <span class="temp-large" id="current-temp">--&deg;</span>
-                <span class="temp-small" id="current-minmax">--&deg;</span>
-            </div>
-            <div class="condition-text" id="current-desc">Fetching weather...</div>
-        </div>
-
-        <div class="daily-section" id="daily-container">
-            </div>
-
-        <div class="graph-section">
-            <canvas id="weatherChart"></canvas>
-        </div>
-
-        <div class="details-section">
-            <div class="details-wrapper">
-                <div class="details-grid">
-                    <div class="detail-item">☔ <span id="current-pop">--%</span></div>
-                    <div class="detail-item">💨 <span id="current-wind">-- mph</span></div>
-                    <div class="detail-item">🌡️ <span id="current-pressure">-- hPa</span></div>
-                    <div class="detail-item">💧 <span id="current-humidity">--%</span></div>
-                    <div class="detail-item">🌅 <span id="current-sunrise">--:--</span></div>
-                    <div class="detail-item">🌇 <span id="current-sunset">--:--</span></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="hourly-section" id="hourly-container">
-            </div>
-
-    </div>
-
-    <script>
-        // --- 1. CONFIGURATION ---
-        const apiKey = '2e5420768d626e40a1df00624c0cdf34'; 
-        const lat = '35.7796'; 
-        const lon = '-78.6382'; 
-        const units = 'imperial'; 
-
-        let weatherChart; 
-
-        // --- 2. LIVE CLOCK ---
-        function updateClock() {
-            const now = new Date();
-            let hours = now.getHours();
-            let minutes = now.getMinutes().toString().padStart(2, '0');
-            let ampm = hours >= 12 ? 'PM' : 'AM';
-            
-            hours = hours % 12;
-            hours = hours ? hours : 12; 
-            
-            document.getElementById('clock').innerHTML = `${hours}:${minutes}<span>${ampm}</span>`;
-            
-            const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
-            document.getElementById('date').innerText = now.toLocaleDateString('en-US', options);
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-
-        // --- 3. HELPER FUNCTIONS ---
-        function getWeatherEmoji(iconCode) {
-            const mapping = {
-                '01d': '☀️', '01n': '🌙',
-                '02d': '⛅', '02n': '☁️',
-                '03d': '☁️', '03n': '☁️',
-                '04d': '☁️', '04n': '☁️',
-                '09d': '🌧️', '09n': '🌧️',
-                '10d': '🌦️', '10n': '🌧️',
-                '11d': '⛈️', '11n': '⛈️',
-                '13d': '❄️', '13n': '❄️',
-                '50d': '🌫️', '50n': '🌫️'
-            };
-            return mapping[iconCode] || '🌤️';
-        }
-
-        function formatTime(unixTime, showMinutes = true) {
-            const date = new Date(unixTime * 1000);
-            let hours = date.getHours();
-            let minutes = date.getMinutes().toString().padStart(2, '0');
-            let ampm = hours >= 12 ? 'PM' : 'AM';
-            
-            hours = hours % 12;
-            hours = hours ? hours : 12; 
-            
-            if (showMinutes) {
-                return `${hours}:${minutes} ${ampm}`; 
-            } else {
-                return `${hours} ${ampm}`; 
-            }
-        }
-
-        function getDayName(unixTime) {
-            const date = new Date(unixTime * 1000);
-            return date.toLocaleDateString('en-US', { weekday: 'short' });
-        }
-
-        // --- 4. FETCH AND RENDER DATA ---
-        async function fetchWeather() {
-            try {
-                const currentRes = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=${units}&appid=${apiKey}`);
-                const currentData = await currentRes.json();
-
-                const forecastRes = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=${units}&appid=${apiKey}`);
-                const forecastData = await forecastRes.json();
-
-                renderCurrent(currentData, forecastData);
-                renderForecastAndChart(forecastData);
-
-            } catch (error) {
-                console.error("Error fetching weather data:", error);
-                document.getElementById('current-desc').innerText = "Network Error - Retrying...";
-            }
-        }
-
-        function renderCurrent(current, forecast) {
-            document.getElementById('current-temp').innerHTML = `${Math.round(current.main.temp)}&deg;`;
-            document.getElementById('current-minmax').innerHTML = `${Math.round(current.main.temp_min)}&deg;`;
-            document.getElementById('current-desc').innerText = current.weather[0].description;
-            document.getElementById('current-icon').innerText = getWeatherEmoji(current.weather[0].icon);
-            
-            document.getElementById('current-wind').innerText = `${current.wind.speed.toFixed(1)} mph`;
-            document.getElementById('current-pressure').innerText = `${(current.main.pressure * 0.02953).toFixed(2)} inHg`; 
-            document.getElementById('current-humidity').innerText = `${current.main.humidity}%`;
-            
-            document.getElementById('current-sunrise').innerText = formatTime(current.sys.sunrise, true);
-            document.getElementById('current-sunset').innerText = formatTime(current.sys.sunset, true);
-
-            if(forecast.list[0]) {
-                document.getElementById('current-pop').innerText = `${(forecast.list[0].pop).toFixed(2)} "/h`; 
-            }
-        }
-
-        function renderForecastAndChart(forecast) {
-            const stripData = forecast.list.slice(0, 8);
-            
-            let labels = [];
-            let temps = [];
-            let hourlyHTML = '';
-
-            stripData.forEach(item => {
-                const time = formatTime(item.dt, false); 
-                const temp = Math.round(item.main.temp);
-                const icon = getWeatherEmoji(item.weather[0].icon);
-                
-                labels.push(time);
-                temps.push(temp);
-
-                hourlyHTML += `
-                    <div class="hourly-item">
-                        <span>${time}</span>
-                        <span class="icon">${icon}</span>
-                        <span>${temp}&deg;</span>
-                    </div>
-                `;
-            });
-
-            document.getElementById('hourly-container').innerHTML = hourlyHTML;
-            updateChart(labels, temps);
-
-            const dailyMap = new Map();
-            forecast.list.forEach(item => {
-                const day = getDayName(item.dt);
-                if (!dailyMap.has(day)) {
-                    dailyMap.set(day, { min: item.main.temp, max: item.main.temp, icon: item.weather[0].icon });
-                } else {
-                    const existing = dailyMap.get(day);
-                    existing.min = Math.min(existing.min, item.main.temp);
-                    existing.max = Math.max(existing.max, item.main.temp);
-                    if(item.weather[0].icon.includes('d')) existing.icon = item.weather[0].icon; 
-                }
-            });
-
-            let dailyHTML = '';
-            let count = 0;
-            dailyMap.forEach((data, day) => {
-                if(count >= 5) return; 
-                dailyHTML += `
-                    <div class="daily-item">
-                        <span style="width: 50px;">${day}</span> 
-                        <span class="icon">${getWeatherEmoji(data.icon)}</span> 
-                        <span>${Math.round(data.min)}&deg;...${Math.round(data.max)}&deg;</span>
-                    </div>
-                `;
-                count++;
-            });
-            document.getElementById('daily-container').innerHTML = dailyHTML;
-        }
-
-        function updateChart(labels, temps) {
-            const ctx = document.getElementById('weatherChart').getContext('2d');
-            
-            if (weatherChart) { weatherChart.destroy(); } 
-
-            weatherChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Temperature',
-                            data: temps,
-                            type: 'line',
-                            borderColor: '#ffb74d',
-                            backgroundColor: '#ffb74d',
-                            borderWidth: 4,
-                            pointRadius: 5,
-                            yAxisID: 'y'
-                        },
-                        {
-                            label: 'Temperature Bar', 
-                            data: temps,
-                            type: 'bar',
-                            backgroundColor: '#2b7fb9',
-                            barPercentage: 0.95, /* MUCH wider bars */
-                            categoryPercentage: 1.0, /* Closes the gaps between bars */
-                            yAxisID: 'y'
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { ticks: { color: '#aaa', font: {size: 14} }, grid: { color: '#333' } },
-                        y: { 
-                            type: 'linear', display: true, position: 'left',
-                            ticks: { color: '#ffb74d', font: {size: 14} }, grid: { color: '#333' },
-                            suggestedMin: Math.min(...temps) - 5, suggestedMax: Math.max(...temps) + 5
-                        }
-                    }
-                }
-            });
-        }
-
-        fetchWeather();
-        setInterval(fetchWeather, 900000); 
-    </script>
-</body>
-</html>
+            <div style="display: flex; align-items:
